@@ -1,5 +1,6 @@
 # ToDo Application API
-#Development Status
+
+# Development Status
 This project is currently under development and is not yet complete. Some features are still being implemented, and there may be incomplete or experimental functionality. Please check back for updates and improvements.
 ## Description
 
