@@ -1,5 +1,6 @@
 # ToDo Application API
-
+#Development Status
+This project is currently under development and is not yet complete. Some features are still being implemented, and there may be incomplete or experimental functionality. Please check back for updates and improvements.
 ## Description
 
 This project is a REST API for a ToDo application built with ASP.NET Core and Entity Framework Core. The API allows you to perform CRUD operations on tasks and includes additional features such as tracking task status via email and generating monthly productivity reports.
