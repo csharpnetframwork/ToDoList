@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ToDoList.Data;
 using ToDoList.Model;
+using ToDoList.EmailService;
+using Microsoft.EntityFrameworkCore;  // Ensure this is the correct namespace for your Email service
 
 /*
     ASP.NET (Active Server Pages) is a framework used for creating web applications.
@@ -27,10 +29,12 @@ namespace ToDoList.Controllers
     public class ToDoListController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly Email _emailService;
 
-        public ToDoListController(ApplicationDbContext context)
+        public ToDoListController(ApplicationDbContext context, Email emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // Endpoint to add a new task
@@ -49,7 +53,7 @@ namespace ToDoList.Controllers
                 Task_Description = taskDescription,
                 Task_Status = taskStatus,
                 Task_Type = taskType,
-                Task_StatusDescription = "Task is created at " + DateTime.Now.ToString("yyyy-MMM-dd :hh:mm") // Default description for new tasks
+                Task_StatusDescription = "Task is created at " + DateTime.Now.ToString("yyyy-MMM-dd HH:mm") // Default description for new tasks
             };
 
             // Add the new task to the database
@@ -61,15 +65,45 @@ namespace ToDoList.Controllers
             // Return a response indicating that the data was successfully submitted
             return Ok("Data is submitted");
         }
+
+        // Endpoint to get all tasks
         [HttpGet]
-        public IActionResult GetTask()
+        public async Task<IActionResult> GetTask()
         {
             // Retrieve all tasks from the database
-            var tasks = _context.Tasks.ToList();
+            var tasks = await _context.Tasks.ToListAsync();
+
+            // Generate HTML content
+            var htmlContent = "<html><body> <h1>Tasks List</h1><table border='1'><tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Type</th><th>Status Description</th></tr>";
+
+            foreach (var task in tasks)
+            {
+                htmlContent += $"<tr><td>{task.Task_ID}</td><td>{task.Task_Name}</td><td>{task.Task_Description}</td><td>{task.Task_Status}</td><td>{task.Task_Type}</td><td>{task.Task_StatusDescription}</td></tr>";
+            }
+
+            htmlContent += "</table></body></html>";
+
+            // Send an email with the HTML content
+            try
+            {
+                await _emailService.SendEmailAsync(
+                    "bhumika.sol06@gmail.com",  // Recipient email0
+                    "Task List ",                    // Subject
+                    htmlContent                     // HTML content
+                );
+                Console.WriteLine("Email sent successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending email: {ex.Message}");
+            }
 
             // Return the tasks as an HTTP response
             return Ok(tasks);
         }
+
+
+        // Endpoint to delete a task by ID
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
@@ -91,6 +125,8 @@ namespace ToDoList.Controllers
             // Return a response indicating that the task was successfully deleted
             return Ok("Task deleted successfully");
         }
+
+        // Endpoint to update a task by ID
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateTask(Guid id, [FromBody] AddTaskModel updatedTask)
         {
@@ -122,7 +158,7 @@ namespace ToDoList.Controllers
             }
             if (!string.IsNullOrWhiteSpace(updatedTask.Task_StatusDescription))
             {
-                task.Task_StatusDescription = updatedTask.Task_StatusDescription  + DateTime.Now.ToString("yyyy-MMM-dd :hh:mm");
+                task.Task_StatusDescription = updatedTask.Task_StatusDescription + " Updated at " + DateTime.Now.ToString("yyyy-MMM-dd HH:mm");
             }
 
             // Save changes asynchronously

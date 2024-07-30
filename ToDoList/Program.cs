@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ToDoList.Data;
+using ToDoList.EmailService;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,8 @@ builder.Services.AddControllers();  // Adds services for controllers, enabling A
 
 builder.Services.AddEndpointsApiExplorer();  // Adds services to generate API documentation for Swagger/OpenAPI.
 builder.Services.AddSwaggerGen();  // Adds and configures Swagger generator for API documentation.
+// In Program.cs or Startup.cs
+builder.Services.AddSingleton<Email>();
 
 
 // Configure Entity Framework and SQL Server
