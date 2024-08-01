@@ -115,7 +115,7 @@ namespace ToDoList.Controllers
             task.Task_Status = updatedTask.Task_Status ?? task.Task_Status;
             task.Task_Type = updatedTask.Task_Type ?? task.Task_Type;
             task.Task_StatusDescription = updatedTask.Task_StatusDescription != null
-                ? updatedTask.Task_StatusDescription + " Updated at " + DateTime.Now.ToString("yyyy-MMM-dd HH:mm")
+                ? updatedTask.Task_StatusDescription + " Updated at " + DateTime.Now.ToString("yyyy-MMM-dd hh:mm")
                 : task.Task_StatusDescription;
 
             await _context.SaveChangesAsync();
