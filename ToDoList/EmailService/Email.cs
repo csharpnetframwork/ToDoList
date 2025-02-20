@@ -11,7 +11,7 @@ public class Email
     private readonly string _smtpServer = "smtp-relay.brevo.com";
     private readonly int _port = 587; // Or 25, 465, 2525 depending on what you want to use
     private readonly string _username = "csharpnetframwork@gmail.com";
-    private readonly string _password = "KfpJ6dbQECk0sLS1"; // Replace with your actual password
+    private readonly string _password = "KfpJ6dbQECk0sLS1_Test"; // Replace with your actual password
 
     public async Task SendEmailAsync(string toEmail, string subject, string body)
     {
